@@ -181,6 +181,7 @@ def process_photo(input_filename: Path, params: RecognitionParams) -> Tuple[Path
 
 
 def main(img):
+    
     data_path = Path(img)
     job_id = post_form(data_path, RecognitionParams(has_public_confirm=False, lang=Lang.en, two_sides=True, auto_orient=False))
     while not result_ready(job_id):

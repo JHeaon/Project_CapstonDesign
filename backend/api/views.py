@@ -30,6 +30,7 @@ class BrailleCreateAPIView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         
         img = serializer.data["image"][serializer.data["image"].index("media"):]
+        img = os.path.join(os.path.join(os.getcwd(), "backend"), img)
         braille_text = website_recognizer.main(img)
         translator = BrailleToKor()
         text = translator.translation(braille_text)
@@ -50,10 +51,7 @@ class KoreanCreateAPIView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         
         img = serializer.data["image"][serializer.data["image"].index("media"):]
-        
-        temp = os.getcwd() + r'/media/Korean/'
-        file_name = os.listdir(temp)[0]
-        full_name = os.path.abspath(temp + "\\" + file_name)
+        img = os.path.join(os.path.join(os.getcwd(), "backend"), img)
         
         pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT")
         text = pytesseract.image_to_string(img, lang="kor+eng").replace("\n", " ")
