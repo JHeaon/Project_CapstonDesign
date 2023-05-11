@@ -1,4 +1,4 @@
 import os
 
-print(os.path.join(os.path.abspath(os.getcwd()), "tesseract.exe"))
+print(os.path.join(os.path.abspath(os.path.dirname(__file__)), "tesseract.exe"))
 
