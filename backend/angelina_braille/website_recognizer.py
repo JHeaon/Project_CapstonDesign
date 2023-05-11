@@ -187,9 +187,7 @@ def main(img):
     while not result_ready(job_id):
         time.sleep(.5)
 
-    out_path = (data_path.parent / "tmp") / (data_path.stem + ".marked.jpg")
-    out_path.parent.mkdir(exist_ok=True)
-    text = get_result(id=job_id, out_filename=out_path)
+    text = retrieve_text(id=job_id)
     
     return text
 
