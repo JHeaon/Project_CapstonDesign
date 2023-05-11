@@ -3,28 +3,40 @@
 This project is keimyung university capston design project. It is designed for the visually impaired. It works by taking a braille picture and translating the picture into tts
 
 
-## Working
+## Quick Start
 - python version : 3.10.2
+- git
 
 make python virtual environment and install python module
 
 ```
 py -3.10 -m venv Env
 source Env/Scripts/Activate
-pip install requirements.txt
+
+# windows
+sh sh_files/win_dev.sh
+
+# macos
+sh sh_files/mac_dev.sh
 ```
 
 run server 
 ```
-python Config/manage.py runserver 
+python backend/manage.py runserver 
 ```
+
+
+## Swagger
+please after run server, enter this website
+
+- http://127.0.0.1:8000/redoc/
+- http://127.0.0.1:8000/swagger/
 
 
 ## Stack
 
 - Django
 - Django rest framework
-- Selenium
 - Tesseract
 
 
