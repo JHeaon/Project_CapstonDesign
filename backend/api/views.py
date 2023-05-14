@@ -8,6 +8,7 @@ from rest_framework import status
 from .models import Braille, Korean
 from .serializers import BrailleSerializer, KoreanSerializer
 from angelina_braille import website_recognizer
+from tesseract.tesseract_abspath import path as tesseract_path
 
 # Third party modules
 import pytesseract
@@ -53,7 +54,7 @@ class KoreanCreateAPIView(generics.CreateAPIView):
         img = serializer.data["image"][serializer.data["image"].index("media"):]
         img = os.path.join(os.path.join(os.getcwd(), "backend"), img)
         
-        pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT")
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
         text = pytesseract.image_to_string(img, lang="kor+eng").replace("\n", " ")
         
         Korean.objects.get(id=serializer.data["id"]).delete()
