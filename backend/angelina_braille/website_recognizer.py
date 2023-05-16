@@ -19,6 +19,7 @@ from typing import Tuple
 
 from bs4 import BeautifulSoup
 from pathlib import Path
+from fake_useragent import UserAgent
 
 import shutil
 import requests
@@ -26,6 +27,8 @@ import re
 import time
 
 base_url = "https://angelina-reader.ru"
+# ua = UserAgent(use_cache_server=True)
+# headers = {'User-Agent': ua.random}
 
 
 class Lang(Enum):
