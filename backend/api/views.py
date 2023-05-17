@@ -32,11 +32,13 @@ class BrailleCreateAPIView(generics.CreateAPIView):
         img = serializer.data["image"][serializer.data["image"].index("media"):]
         img_name = img
         img_abs_path = os.path.join(os.path.join(os.getcwd(), "backend"), img_name)
+
         temp = cv2.imread(img_abs_path)
-        temp = cv2.resize(temp, dsize=(0, 0), fx=0.7, fy=0.7, interpolation=cv2.INTER_LINEAR)
+        temp = cv2.resize(temp, dsize=(0, 0), fx=0.9, fy=0.9, interpolation=cv2.INTER_LINEAR)
+        
         h, w = temp.shape[:2]
-        h1, h2 = int(h * 0.05), int(h * 0.95)
-        w1, w2 = int(w * 0.05), int(w * 0.95)
+        h1, h2 = int(h * 0.05), int(h * 0.9)
+        w1, w2 = int(w * 0.05), int(w * 0.9)
         temp = temp[h1: h2, w1: w2]
         gray = cv2.cvtColor(temp, cv2.COLOR_BGR2GRAY)
         img2 = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)[1]
@@ -61,6 +63,7 @@ class BrailleCreateAPIView(generics.CreateAPIView):
         cv2.rectangle(temp, (x1_min, y1_min), (x2_max, y2_max), (0, 255, 0), 3)
 
         temp = temp[y1_min:y2_max, x1_min:x2_max]
+        
         cv2.imwrite(img_abs_path, temp)
 
 
@@ -86,6 +89,9 @@ class KoreanCreateAPIView(generics.CreateAPIView):
         img = serializer.data["image"][serializer.data["image"].index("media"):]
         img = os.path.join(os.path.join(os.getcwd(), "backend"), img)
         
+        temp = cv2.imread(img)
+        temp = cv2.resize(temp, dsize=(0, 0), fx=0.9, fy=0.9, interpolation=cv2.INTER_LINEAR)
+        cv2.imwrite(img, temp)
         
         
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
