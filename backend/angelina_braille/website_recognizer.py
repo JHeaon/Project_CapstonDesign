@@ -19,7 +19,6 @@ from typing import Tuple
 
 from bs4 import BeautifulSoup
 from pathlib import Path
-from fake_useragent import UserAgent
 
 import shutil
 import requests
