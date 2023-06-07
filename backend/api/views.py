@@ -23,7 +23,6 @@ class BrailleCreateAPIView(generics.CreateAPIView):
     serializer_class = BrailleSerializer
 
     def post(self, request, *args, **kwargs):
-        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -31,14 +30,14 @@ class BrailleCreateAPIView(generics.CreateAPIView):
         
         img = serializer.data["image"][serializer.data["image"].index("media"):]
         img_name = img
-        img_abs_path = os.path.join(os.path.join(os.getcwd(), "backend"), img_name)
+        img_abs_path = os.path.join(os.path.join(os.getcwd()), img_name)
 
         temp = cv2.imread(img_abs_path)
-        temp = cv2.resize(temp, dsize=(0, 0), fx=0.9, fy=0.9, interpolation=cv2.INTER_LINEAR)
+        temp = cv2.resize(temp, dsize=(0, 0), fx=0.6, fy=0.6, interpolation=cv2.INTER_LINEAR)
         
         h, w = temp.shape[:2]
-        h1, h2 = int(h * 0.05), int(h * 0.9)
-        w1, w2 = int(w * 0.05), int(w * 0.9)
+        h1, h2 = int(h * 0.1), int(h * 0.9)
+        w1, w2 = int(w * 0.1), int(w * 0.9)
         temp = temp[h1: h2, w1: w2]
         gray = cv2.cvtColor(temp, cv2.COLOR_BGR2GRAY)
         img2 = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)[1]
@@ -87,15 +86,12 @@ class KoreanCreateAPIView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         
         img = serializer.data["image"][serializer.data["image"].index("media"):]
-        img = os.path.join(os.path.join(os.getcwd(), "backend"), img)
-        
-        temp = cv2.imread(img)
-        temp = cv2.resize(temp, dsize=(0, 0), fx=0.9, fy=0.9, interpolation=cv2.INTER_LINEAR)
-        cv2.imwrite(img, temp)
-        
+        img = os.path.join(os.path.join(os.getcwd()), img)
+
+
         
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
-        text = pytesseract.image_to_string(img, lang="kor+eng").replace("\n", " ")
+        text = pytesseract.image_to_string(img, lang="kor").replace("\n", " ")
         
         Korean.objects.get(id=serializer.data["id"]).delete()
         

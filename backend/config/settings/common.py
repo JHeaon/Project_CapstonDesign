@@ -37,15 +37,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    
-    #custom apps
+    # custom apps
     "api",
-    
     # third party apps
     "rest_framework",
-    'drf_yasg',
+    "drf_yasg",
 ]
-
 
 
 MIDDLEWARE = [
@@ -126,12 +123,12 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIR = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 ]
-STAITC_ROOT = 'statifiles'
+STAITC_ROOT = "statifiles"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 # Default primary key field type
