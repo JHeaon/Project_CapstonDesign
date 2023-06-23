@@ -1,5 +1,6 @@
 # Django import
 from django.http import JsonResponse
+
 # Drf import
 from rest_framework import generics 
 from rest_framework import status
@@ -19,15 +20,22 @@ import os
 
 
 class BrailleCreateAPIView(generics.CreateAPIView):
+    """
+    점자 사진을 처리하는 View 클래스
+    """
     queryset = Braille.objects.all()
     serializer_class = BrailleSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        점자 사진 Post 요청 처리
+        """
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        
+
+        # Post 요청으로 들어온 이미지를 찾아서, 크기 조절 후 저장     
         img = serializer.data["image"][serializer.data["image"].index("media"):]
         img_name = img
         img_abs_path = os.path.join(os.path.join(os.getcwd()), img_name)
@@ -43,12 +51,9 @@ class BrailleCreateAPIView(generics.CreateAPIView):
         img2 = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)[1]
         contours = cv2.findContours(img2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
 
-        x1 = [] #x좌표의 최소값
-        y1 = [] #y좌표의 최소값
-        x2 = [] #x좌표의 최대값
-        y2 = [] #y좌표의 최대값
+        x1, x2, y1, y2 = [], [], [], []
         
-        for i in range(1, len(contours)):# i = 1 는 이미지 전체의 외곽이되므로 카운트에 포함시키지 않는다.
+        for i in range(1, len(contours)):
             ret = cv2.boundingRect(contours[i])
             x1.append(ret[0])
             y1.append(ret[1])
@@ -65,34 +70,44 @@ class BrailleCreateAPIView(generics.CreateAPIView):
         
         cv2.imwrite(img_abs_path, temp)
 
-
+        # Angelina braille로 이미지 전송하여 이미지를 해석하여 유니코드 점자 텍스트로 받음
         braille_text = website_recognizer.main(img_abs_path)
+
+        # 유니코드 점자 한글화 
         translator = BrailleToKor()
         text = translator.translation(braille_text)
         
+        # DB에 쌓이지 않게 저장된 id을 찾아 삭제
         Braille.objects.get(id=serializer.data["id"]).delete()
         
         return JsonResponse({"text": text}, status=status.HTTP_201_CREATED)
     
 
 class KoreanCreateAPIView(generics.CreateAPIView):
+    """
+    한글 사진을 처리하는 View 클래스
+    tesseract가 윈도우 버전이라, 배포 할 때, 윈도우 OS기반을 사용하거나, Linux 기반 tesseract 설치하고 코드를 수정하여야 함
+    """
     queryset = Korean.objects.all()
     serializer_class = KoreanSerializer
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        한글사진 Post 요청 처리
+        """
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
         
         img = serializer.data["image"][serializer.data["image"].index("media"):]
         img = os.path.join(os.path.join(os.getcwd()), img)
 
-
-        
+        # tesseract을 통해 한글이미지를 한글 텍스트로 받음
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
         text = pytesseract.image_to_string(img, lang="kor").replace("\n", " ")
         
+        # DB에 쌓이지 않게 저장된 id을 찾아 삭제
         Korean.objects.get(id=serializer.data["id"]).delete()
         
         return JsonResponse({"text": text}, status=status.HTTP_201_CREATED)
